@@ -1,0 +1,37 @@
+# === Personal / Local Files ===
+DONTREADME.md
+Playlist/
+
+# === Gradle Build Files ===
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+!gradle/wrapper/gradle-wrapper.properties
+
+# === IDE / System Files ===
+*.iml
+.idea/
+*.class
+*.log
+*.DS_Store
+*.swp
+*.swo
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# === Backup / Temporary Files ===
+*.tmp
+*.bak
+*.old
+*.orig
+
+# === Java Specific ===
+*.class
+*.jar
+*.war
+*.ear
+hs_err_pid*
+replay_pid*
