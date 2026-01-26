@@ -130,22 +130,34 @@ public class Main extends Application {
                 mediaPlayer[0].setVolume(newVal.doubleValue())
         );
 
-        // Update progress in real time
-        mediaPlayer[0].currentTimeProperty().addListener((obs, oldTime, newTime) -> {
-            double total = mediaPlayer[0].getTotalDuration().toMillis();
-            if (total > 0) {
-                double progress = (newTime.toMillis() / total) * 100;
-                progressSlider.setValue(progress);
-            }
+        setupPlayerListeners(mediaPlayer[0], progressSlider);
+
+        //Setting focus mode on
+        progressSlider.setFocusTraversable(false);
+        volumeSlider.setFocusTraversable(false);
+
+        // prevent arrow key hijack
+        volumeSlider.setOnKeyPressed(e -> e.consume());
+
+        // prevent focus sticking after mouse click
+        volumeSlider.setOnMousePressed(e -> {
+            ((StackPane) volumeSlider.getScene().getRoot()).requestFocus();
+        });
+        volumeSlider.setOnMouseDragged(e -> {
+            ((StackPane) volumeSlider.getScene().getRoot()).requestFocus();
         });
 
         // Seek support
-        progressSlider.setOnMousePressed(e ->
-                mediaPlayer[0].seek(mediaPlayer[0].getTotalDuration().multiply(progressSlider.getValue() / 100.0))
-        );
-        progressSlider.setOnMouseDragged(e ->
-                mediaPlayer[0].seek(mediaPlayer[0].getTotalDuration().multiply(progressSlider.getValue() / 100.0))
-        );
+        progressSlider.setOnMousePressed(e -> {
+            ((StackPane) progressSlider.getScene().getRoot()).requestFocus();
+            mediaPlayer[0].seek(mediaPlayer[0].getTotalDuration().multiply(progressSlider.getValue() / 100.0));
+            e.consume();
+        });
+        progressSlider.setOnMouseDragged(e -> {
+            ((StackPane) progressSlider.getScene().getRoot()).requestFocus();
+            mediaPlayer[0].seek(mediaPlayer[0].getTotalDuration().multiply(progressSlider.getValue() / 100.0));
+            e.consume();
+        });
 
         VBox slidersBox = new VBox(8, progressSlider, volumeSlider);
         slidersBox.setAlignment(Pos.CENTER);
@@ -157,6 +169,10 @@ public class Main extends Application {
         Button playPauseBtn = new Button("▶");
         Button nextBtn = new Button("⏭");
         Button lastBtn = new Button("⏮");
+        
+        playPauseBtn.setFocusTraversable(false);
+        nextBtn.setFocusTraversable(false);
+        lastBtn.setFocusTraversable(false);
 
         playPauseBtn.setStyle(buttonStyle);
         nextBtn.setStyle(buttonStyle);
@@ -183,6 +199,9 @@ public class Main extends Application {
             mediaPlayer[0].stop();
             mediaPlayer[0].dispose();
             mediaPlayer[0] = new MediaPlayer(new Media(songs[currentIndex[0]].toURI().toString()));
+            setupPlayerListeners(mediaPlayer[0], progressSlider);
+            progressSlider.setValue(0);
+            mediaPlayer[0].setOnEndOfMedia(() -> nextBtn.fire());
 
             Track nextTrack = Track.fromFile(songs[currentIndex[0]]);
             titleLabel.setText(nextTrack.getTitle());
@@ -202,6 +221,9 @@ public class Main extends Application {
             mediaPlayer[0].stop();
             mediaPlayer[0].dispose();
             mediaPlayer[0] = new MediaPlayer(new Media(songs[currentIndex[0]].toURI().toString()));
+            setupPlayerListeners(mediaPlayer[0], progressSlider);
+            mediaPlayer[0].setOnEndOfMedia(() -> nextBtn.fire());
+            progressSlider.setValue(0);
 
             Track prevTrack = Track.fromFile(songs[currentIndex[0]]);
             titleLabel.setText(prevTrack.getTitle());
@@ -245,10 +267,107 @@ public class Main extends Application {
         Image icon = new Image(iconStream);
         primaryStage.getIcons().add(icon);
 
+        //
+        // KEYBOARD HANDLER
+        //
+
+        scene.setOnKeyPressed(e -> {
+            MediaPlayer player = mediaPlayer[0];
+            javafx.util.Duration total = player.getTotalDuration();
+
+            switch (e.getCode()) {
+                case SPACE -> {
+                    if (playPauseBtn.getText().equals("▶")) {
+                        playPauseBtn.setText("⏸");
+                        player.play();
+                    } else {
+                        playPauseBtn.setText("▶");
+                        player.pause();
+                    }
+                }
+
+                case RIGHT -> {
+                    if (e.isControlDown()) {
+                        // CTRL + → → Next track
+                        nextBtn.fire();
+                    } else {
+                        // → alone → Seek +5s forward
+                        if (total != null && !total.isUnknown()) {
+                            javafx.util.Duration newTime = player.getCurrentTime().add(javafx.util.Duration.seconds(5));
+                            if (newTime.greaterThan(total)) newTime = total;
+
+                            player.seek(newTime); // ⬅ this moves the song's actual time
+
+                            // now also move the slider visually
+                            double progress = (newTime.toMillis() / total.toMillis()) * 100.0;
+                            progressSlider.setValue(progress);
+                        }
+                    }
+                }
+
+                case LEFT -> {
+                    if (e.isControlDown()) {
+                        // CTRL + ← → Previous track
+                        lastBtn.fire();
+                    } else {
+                        // ← alone → Seek −5s backward
+                        javafx.util.Duration newTime = player.getCurrentTime().subtract(javafx.util.Duration.seconds(5));
+                        if (newTime.lessThan(javafx.util.Duration.ZERO)) newTime = javafx.util.Duration.ZERO;
+
+                        player.seek(newTime); // ⬅ move the song’s current time
+                        if (total != null && !total.isUnknown() && total.greaterThan(javafx.util.Duration.ZERO)) {
+                            double progress = (newTime.toMillis() / total.toMillis()) * 100.0;
+                            progressSlider.setValue(progress);
+                        }
+                    }
+                }
+
+                case UP -> {
+                    double newVol = Math.min(volumeSlider.getValue() + 0.05, 1.0);
+                    volumeSlider.setValue(newVol);
+                    player.setVolume(newVol);
+                }
+
+                case DOWN -> {
+                    double newVol = Math.max(volumeSlider.getValue() - 0.05, 0.0);
+                    volumeSlider.setValue(newVol);
+                    player.setVolume(newVol);
+                }
+
+                default -> {}
+            }
+
+            e.consume();
+        });
+
+        root.setFocusTraversable(true);
+        scene.setOnMouseClicked(e -> root.requestFocus());
+        root.requestFocus();
+
+
         primaryStage.setTitle("Serene Candy");
         primaryStage.setScene(scene);
         primaryStage.setResizable(false);
         primaryStage.show();
+    }
+
+    private void setupPlayerListeners(MediaPlayer player, Slider progressSlider) {
+        // clear any previous listeners (if any)
+        player.currentTimeProperty().addListener((obs, oldTime, newTime) -> {
+            double total = player.getTotalDuration().toMillis();
+            if (total > 0) {
+                double progress = (newTime.toMillis() / total) * 100;
+                progressSlider.setValue(progress);
+            }
+        });
+
+        // When song finishes, go to next
+        player.setOnEndOfMedia(() -> {
+            // simulate nextBtn click
+            player.stop(); // stop current
+            progressSlider.setValue(0);
+            // nextBtn.fire();
+        });
     }
 
     public static void main(String[] args) {
