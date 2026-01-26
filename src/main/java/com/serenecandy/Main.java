@@ -16,7 +16,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.layout.StackPane;
-import javafx.scene.layout.Region;
 import javafx.scene.layout.Priority;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
@@ -100,11 +99,11 @@ public class Main extends Application {
 
         ImageView blurredBackground = new ImageView(albumImage);
         blurredBackground.setFitWidth(640);
-        blurredBackground.setFitHeight(480);
+        blurredBackground.setFitHeight(600);
         blurredBackground.setEffect(new GaussianBlur(30));
 
         // ───────────────────────────────
-        //  💅 STYLING & SPACING
+        //  💅 STYLING
         // ───────────────────────────────
         titleLabel.setStyle("-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: white; "
                 + "-fx-effect: dropshadow(two-pass-box, black, 3, 0.8, 0, 0);");
@@ -117,7 +116,43 @@ public class Main extends Application {
                 + "-fx-text-fill: white; -fx-effect: dropshadow(two-pass-box, black, 3, 0.8, 0, 0);";
 
         // ───────────────────────────────
-        //  ⏯ CONTROLS & PROGRESS BAR
+        //  🎚️ SLIDERS SECTION
+        // ───────────────────────────────
+        Slider progressSlider = new Slider(0, 100, 0);
+        progressSlider.setPrefWidth(300);
+        progressSlider.setMaxWidth(300);
+        VBox.setVgrow(progressSlider, Priority.NEVER);
+
+        Slider volumeSlider = new Slider(0, 1, 0.6);
+        volumeSlider.setPrefWidth(150);
+        volumeSlider.setMaxWidth(150);
+        volumeSlider.valueProperty().addListener((obs, oldVal, newVal) ->
+                mediaPlayer[0].setVolume(newVal.doubleValue())
+        );
+
+        // Update progress in real time
+        mediaPlayer[0].currentTimeProperty().addListener((obs, oldTime, newTime) -> {
+            double total = mediaPlayer[0].getTotalDuration().toMillis();
+            if (total > 0) {
+                double progress = (newTime.toMillis() / total) * 100;
+                progressSlider.setValue(progress);
+            }
+        });
+
+        // Seek support
+        progressSlider.setOnMousePressed(e ->
+                mediaPlayer[0].seek(mediaPlayer[0].getTotalDuration().multiply(progressSlider.getValue() / 100.0))
+        );
+        progressSlider.setOnMouseDragged(e ->
+                mediaPlayer[0].seek(mediaPlayer[0].getTotalDuration().multiply(progressSlider.getValue() / 100.0))
+        );
+
+        VBox slidersBox = new VBox(8, progressSlider, volumeSlider);
+        slidersBox.setAlignment(Pos.CENTER);
+        slidersBox.setPadding(new Insets(5, 0, 5, 0));
+
+        // ───────────────────────────────
+        //  ⏯ CONTROLS SECTION
         // ───────────────────────────────
         Button playPauseBtn = new Button("▶");
         Button nextBtn = new Button("⏭");
@@ -127,19 +162,16 @@ public class Main extends Application {
         nextBtn.setStyle(buttonStyle);
         lastBtn.setStyle(buttonStyle);
 
-        Slider progressBar = new Slider(0, 100, 0);
-        progressBar.setMaxWidth(300);
-        VBox.setVgrow(progressBar, Priority.NEVER);
-        mediaPlayer[0].currentTimeProperty().addListener((obs, oldTime, newTime) -> {
-            double progress = (newTime.toMillis() / mediaPlayer[0].getTotalDuration().toMillis()) * 100;
-            progressBar.setValue(progress);
-        });
-        progressBar.setOnMousePressed(e ->
-                mediaPlayer[0].seek(mediaPlayer[0].getTotalDuration().multiply(progressBar.getValue() / 100.0))
-        );
-        progressBar.setOnMouseDragged(e ->
-                mediaPlayer[0].seek(mediaPlayer[0].getTotalDuration().multiply(progressBar.getValue() / 100.0))
-        );
+        HBox controlsRow = new HBox(20, lastBtn, playPauseBtn, nextBtn);
+        controlsRow.setAlignment(Pos.CENTER);
+        VBox.setMargin(controlsRow, new Insets(10, 0, 20, 0));
+
+        // ───────────────────────────────
+        //  🧾 INFO SECTION
+        // ───────────────────────────────
+        VBox infoBox = new VBox(5, titleLabel, artistLabel, albumLabel);
+        infoBox.setAlignment(Pos.CENTER);
+        infoBox.setPadding(new Insets(10, 0, 0, 0));
 
         // ───────────────────────────────
         //  🎛 EVENT HANDLERS
@@ -194,24 +226,21 @@ public class Main extends Application {
         });
 
         // ───────────────────────────────
-        //  🧱 LAYOUT CONSTRUCTION
+        //  🧩 MAIN COLUMN
         // ───────────────────────────────
-        HBox controlsRow = new HBox(20, lastBtn, playPauseBtn, nextBtn);
-        controlsRow.setAlignment(Pos.CENTER);
-        // VBox.setMargin(controlsRow, new Insets(10, 0, 20, 0));
-
-        VBox infoSection = new VBox(4, titleLabel, artistLabel, albumLabel, progressBar, controlsRow);
-        infoSection.setAlignment(Pos.CENTER);
-
-        VBox mainColumn = new VBox(5, albumView, infoSection);
+        VBox mainColumn = new VBox(12, albumView, infoBox, slidersBox, controlsRow);
         mainColumn.setAlignment(Pos.CENTER);
+        mainColumn.setMaxHeight(580);
+        mainColumn.setSpacing(6); // smaller global spacing
+        VBox.setMargin(controlsRow, new Insets(5, 0, 10, 0)); // lighter padding
+
 
         StackPane root = new StackPane(blurredBackground, mainColumn);
 
         // ───────────────────────────────
         //  🎬 SCENE & STAGE
         // ───────────────────────────────
-        Scene scene = new Scene(root, 640, 480, Color.web("#7aadff"));
+        Scene scene = new Scene(root, 640, 600, Color.TRANSPARENT);
         InputStream iconStream = Main.class.getResourceAsStream("/com/serenecandy/assets/images/logo.jpg");
         Image icon = new Image(iconStream);
         primaryStage.getIcons().add(icon);
