@@ -1,213 +1,172 @@
 # 🍬 Serene Candy
 
-A visually rich, minimalist JavaFX music player.
+A visually rich, minimalist music player for Windows — no installs, no accounts, no ads.
+
+![Java](https://img.shields.io/badge/Java-25-orange) ![JavaFX](https://img.shields.io/badge/JavaFX-25-blue) ![Platform](https://img.shields.io/badge/platform-Windows-lightgrey) ![Status](https://img.shields.io/badge/status-active-brightgreen) ![License](https://img.shields.io/badge/license-MIT-green)
+
+---
 
 ## 🎧 Overview
 
-Serene Candy is a sleek little desktop music player built with JavaFX, designed to look as good as it feels. It features a warm aesthetic, smooth transitions, and dynamic album art that fills the screen with a blurred glow — all wrapped in a minimal, non-resizable frame for pixel-perfect precision and instant focus.
+Serene Candy is a sleek desktop music player built with JavaFX. It features a warm aesthetic, smooth transitions, and dynamic album art that fills the screen with a blurred glow — all wrapped in a minimal, non-resizable frame. Drop in your music, double-click, and you're done.
 
-![Serene Candy Demo](https://img.shields.io/badge/status-active-brightgreen) ![Java](https://img.shields.io/badge/Java-17%2B-orange) ![JavaFX](https://img.shields.io/badge/JavaFX-25-blue)
+---
 
-## ✨ Features
+## ⬇️ Download
 
-🎵 **Automatic Playlist Detection** — reads `.mp3` and `.flac` songs from a Playlist folder beside your JAR.
+Grab the latest release from the [Releases](https://github.com/Vishmayraj/Serene-Candy/releases) page.
 
-🪞 **Dynamic Album Art** — extracts and displays the embedded cover directly from your music files.
+**No Java installation required.** The JRE is fully bundled inside.
 
-🎚️ **Progress & Volume Sliders** — clean, responsive, and immune to focus glitches (keyboard always works).
-
-⌨️ **Keyboard Controls** — 
-- **Space**: Play / Pause
-- **Ctrl + →**: Next Track
-- **Ctrl + ←**: Previous Track
-- **→ / ←**: Seek ±5 seconds
-- **↑ / ↓**: Volume ±5%
-
-🔁 **Autoplay** — next song starts automatically when the current one ends.
-
-💾 **Persistent Track Memory** — remembers your last played song using Java Preferences.
-
-🩵 **Blurred Background Mode** — album art doubles as an ambient soft-focus backdrop.
-
-⚡ **Lightweight & Modular** — built purely in code (no FXML!) with structured VBox/HBox layouts.
-
-## 📁 Project Structure
-
-```
-SereneCandy/
-├── build.gradle
-├── settings.gradle
-├── src/
-│   └── main/
-│       ├── java/
-│       │   └── com/serenecandy/
-│       │       ├── Main.java
-│       │       └── models/
-│       │           └── Track.java
-│       └── resources/
-│           └── com/serenecandy/assets/
-│               ├── images/logo.jpg
-│               └── css/style.css
-└── Playlist/
-    ├── 01 - Duvet.mp3
-    ├── 02 - Pretty Scene Girl!.mp3
-    └── ...
-```
+---
 
 ## 🚀 Getting Started
 
-### Prerequisites
-- Java 17 or higher
-- JavaFX 25 SDK
-- Gradle (for building)
+1. Download and extract `SereneCandy.zip`
+2. Drop your `.mp3` or `.flac` files into the `Playlist/` folder
+3. Double-click `SereneCandy.exe`
 
-### Installation
+That's it.
 
-1. **Clone or download the project**
-   ```bash
-   git clone https://github.com/yourusername/SereneCandy.git
-   cd SereneCandy
-   ```
+> **Note:** The `Playlist/` folder lives inside `app/`. You can add, remove, or swap songs in it anytime — just relaunch the app.
 
-2. **Build the JAR**
-   ```bash
-   ./gradlew build  # On Windows: gradlew.bat build
-   ```
+---
 
-3. **Find the JAR**
-   The compiled JAR will be available at:
-   ```
-   build/libs/SereneCandy-1.0.0.jar
-   ```
+## 📁 What's Inside the ZIP
 
-### Running the Application
-
-**On Windows:**
-```cmd
-java --module-path "C:\javafx-sdk-25.0.2\lib" ^
-     --add-modules javafx.controls,javafx.fxml,javafx.media ^
-     --enable-native-access=javafx.graphics ^
-     -jar SereneCandy-1.0.0.jar
+```
+SereneCandy/
+├── SereneCandy.exe       ← double-click to launch
+├── app/
+│   ├── Playlist/         ← drop your music here
+│   └── SereneCandy.jar   ← app internals (don't touch)
+└── runtime/              ← bundled JRE (no Java needed)
 ```
 
-**On macOS/Linux:**
-```bash
-java --module-path "/path/to/javafx-sdk-25.0.2/lib" \
-     --add-modules javafx.controls,javafx.fxml,javafx.media \
-     --enable-native-access=javafx.graphics \
-     -jar SereneCandy-1.0.0.jar
-```
+---
 
-> **Note:** Adjust the JavaFX SDK path according to your installation.
+## ✨ Features
 
-### Adding Your Music
+🎵 **Automatic Playlist Detection** — reads `.mp3` and `.flac` files from the `Playlist/` folder on every launch.
 
-1. Create a folder named `Playlist` in the same directory as the JAR file.
-2. Drop your `.mp3` or `.flac` files into the `Playlist` folder.
-3. Launch Serene Candy — it will automatically detect and load your music!
+🪞 **Dynamic Album Art** — extracts and displays embedded cover art directly from your music files.
+
+🎚️ **Progress & Volume Sliders** — clean, responsive, and keyboard-friendly.
+
+🎲 **Shuffle Playback** — randomizes your playlist order for a fresh listening experience each time.
+
+🔁 **Autoplay** — next song starts automatically when the current one ends.
+
+💾 **Persistent Track Memory** — remembers your last played song across sessions.
+
+🩵 **Blurred Background** — album art doubles as an ambient soft-focus backdrop.
+
+⚡ **Zero Dependencies** — no Java, no JavaFX SDK, no setup required on the target machine.
+
+---
 
 ## ⌨️ Keyboard Shortcuts
 
-| Key / Combo | Action |
-|-------------|--------|
-| Space | Play / Pause |
-| Ctrl + → | Next track |
-| Ctrl + ← | Previous track |
-| → / ← | Seek ±5 seconds |
-| ↑ / ↓ | Adjust volume ±5% |
+| Key | Action |
+|-----|--------|
+| `Space` | Play / Pause |
+| `Ctrl + →` | Next track |
+| `Ctrl + ←` | Previous track |
+| `→` | Seek +5 seconds |
+| `←` | Seek −5 seconds |
+| `↑` | Volume +5% |
+| `↓` | Volume −5% |
+
+---
+
+## 🧠 Technical Design
+
+**Pure Code Architecture** — Built entirely in Java without FXML, giving complete control over UI behavior.
+
+**Layout Philosophy** — Uses `VBox` and `HBox` containers in a Flutter-inspired composition style.
+
+**Visual Effects** — Background blur powered by JavaFX's `GaussianBlur` at 30px radius.
+
+**Focus Management** — Sliders reject focus traversal to ensure seamless hotkey operation at all times.
+
+**Media Handling** — JavaFX native `MediaPlayer` with automatic track switching via `setOnEndOfMedia()`.
+
+**Persistence** — Java's `Preferences` API stores the last played track across sessions.
+
+**Packaging** — Built with `jpackage` + `jlink`, bundling a trimmed JRE with only the required modules (`javafx.controls`, `javafx.fxml`, `javafx.media`, `java.logging`, `java.prefs`, `java.desktop`).
+
+---
+
+## 🔧 Building from Source
+
+### Prerequisites
+
+- Java 25 JDK
+- JavaFX 25 SDK → [gluonhq.com/products/javafx](https://gluonhq.com/products/javafx/)
+- JavaFX 25 jmods → same page, select **jmods** type
+- Gradle
+
+### Build
+
+```bash
+# From WSL or Linux
+./gradlew build
+```
+
+### Package as Windows .exe
+
+Run from Windows CMD after building:
+
+```cmd
+"C:\Program Files\Java\jdk-25.0.2\bin\jpackage.exe" ^
+  --type app-image ^
+  --name "SereneCandy" ^
+  --input "path\to\build\libs" ^
+  --main-jar SereneCandy-1.0.0.jar ^
+  --module-path "C:\javafx-jmods-25.0.2" ^
+  --add-modules javafx.controls,javafx.fxml,javafx.media,java.logging,java.prefs,java.desktop ^
+  --java-options "--enable-native-access=javafx.graphics" ^
+  --dest "path\to\output"
+```
+
+Then drop an empty `Playlist/` folder next to the generated `SereneCandy.exe`, zip the whole folder, and distribute.
+
+---
 
 ## 🧩 Dependencies
 
 | Library | Purpose | Version |
 |---------|---------|---------|
 | JavaFX | UI and media playback | 25.0.2 |
-| Jaudiotagger | Extract metadata and album covers | 2.0.1 |
-| JLayer | Alternative MP3 decoding support | 1.0.1.4 |
-| JUnit | (Optional) Testing framework | 5.10.0 |
+| Jaudiotagger | Metadata and album art extraction | 2.0.1 |
+| JLayer | MP3 decoding support | 1.0.1.4 |
 
-The dependencies are managed through Gradle. See `build.gradle` for details.
+---
 
-## 🧠 Technical Design
+## 🪄 Roadmap
 
-**Pure Code Architecture** — Built entirely in Java without FXML, allowing for complete control over UI behavior.
+- [ ] Animated crossfade between tracks
+- [ ] Custom color themes (light / dark mode)
+- [ ] Lyrics display panel
+- [ ] Mini player mode
+- [ ] Configurable hotkeys
+- [ ] Playlist management UI
+- [ ] Equalizer with presets
 
-**Layout Philosophy** — Uses `VBox` and `HBox` containers like a JavaFX take on Flutter's layout system, ensuring clean, responsive arrangements.
-
-**Visual Effects** — Background blur powered by JavaFX's `GaussianBlur` effect with a 30px radius for that signature soft-focus look.
-
-**Focus Management** — Sliders reject focus to prevent keyboard navigation issues, ensuring seamless hotkey operation.
-
-**Media Handling** — Leverages JavaFX's native `MediaPlayer` with automatic track switching via `setOnEndOfMedia()`.
-
-**Persistence** — Uses Java's `Preferences` API to remember playback position across sessions.
-
-## 🔧 Development
-
-### Building from Source
-
-```bash
-# Clone the repository
-git clone https://github.com/yourusername/SereneCandy.git
-cd SereneCandy
-
-# Build with Gradle
-./gradlew build
-
-# Run tests
-./gradlew test
-
-# Create a distribution
-./gradlew assembleDist
-```
-
-### IDE Setup
-
-1. **IntelliJ IDEA**:
-   - Import as Gradle project
-   - Ensure JavaFX plugin is installed
-   - Set SDK to Java 17+
-
-2. **VS Code**:
-   - Install "Extension Pack for Java" and "Gradle for Java"
-   - Open the project folder
-   - Set up JavaFX module path in `.vscode/settings.json`
-
-## 🪄 Roadmap & Future Plans
-
-- [ ] **Shuffle & repeat support**
-- [ ] **Animated crossfade between tracks**
-- [ ] **Custom color themes (light / dark mode)**
-- [ ] **Lyrics display panel**
-- [ ] **Mini player mode**
-- [ ] **Configurable hotkeys**
-- [ ] **Playlist management**
-- [ ] **Equalizer with presets**
-- [ ] **Cross-platform installers**
-
-## ❤️ Inspiration & Philosophy
-
-> "Good music doesn't just fill the room — it fills the frame."
-
-Serene Candy started as a weekend project to combine code simplicity with visual warmth. Every pixel, shadow, and keypress is tuned for that soft "handmade" feeling — because sometimes, good UI *is* the music.
+---
 
 ## 📝 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+MIT — see [LICENSE](LICENSE) for details.
+
+---
 
 ## 👤 Author
 
 **Vishmay** — Coder, designer, and occasional night owl.
 
-📀 Built on Windows, forged in WSL, and powered by too much caffeine.
-
-## 🙏 Acknowledgments
-
-- JavaFX team for the excellent media framework
-- Jaudiotagger library for seamless metadata extraction
-- The open-source community for inspiration and support
+📀 Built on Windows, forged in WSL, powered by too much caffeine.
 
 ---
 
-<p align="center">
-  Made with ❤️ and ☕️
-</p>
+<p align="center">Made with ❤️ and ☕️</p>
