@@ -1,6 +1,7 @@
 package com.serenecandy;
 
 import com.serenecandy.models.Track;
+import com.serenecandy.ShuffleHelper;
 
 import java.io.File;
 import java.io.InputStream;
@@ -35,8 +36,7 @@ public class Main extends Application {
         // ───────────────────────────────
         //  🧠 INITIALIZATION & SETUP
         // ───────────────────────────────
-        Preferences prefs = Preferences.userNodeForPackage(Main.class);
-        final int[] currentIndex = { prefs.getInt("currentTrackIndex", 0) };
+        Preferences prefs = Preferences.userNodeForPackage(Main.class);  
 
         LogManager.getLogManager().reset();
         Logger.getLogger("org.jaudiotagger").setLevel(Level.OFF);
@@ -48,19 +48,19 @@ public class Main extends Application {
                 .toURI()
                 .getPath();
 
+        // Get the directory containing the JAR
         File codeLocation = new File(codePath);
-        File projectRoot = codeLocation;
+        File jarDir = codeLocation.isFile() ? codeLocation.getParentFile() : codeLocation;
 
-        if (projectRoot.getPath().contains("build")) {
-            projectRoot = projectRoot.getParentFile().getParentFile().getParentFile();
+        File projectRoot;
+        if (jarDir.getName().equals("app")) {
+            // Running from jpackage — exe is one level up from app/
+            projectRoot = jarDir.getParentFile();
+        } else if (jarDir.getPath().contains("build")) {
+            // Running from Gradle build in dev
+            projectRoot = jarDir.getParentFile().getParentFile().getParentFile();
         } else {
-            projectRoot = projectRoot.getParentFile();
-        }
-
-        String projectPath = projectRoot.getAbsolutePath();
-        if (projectPath.startsWith("C:\\Ubuntu-22.04")) {
-            projectPath = projectPath.replace("C:\\Ubuntu-22.04", "\\\\wsl.localhost\\Ubuntu-22.04");
-            projectRoot = new File(projectPath);
+            projectRoot = jarDir.getParentFile();
         }
 
         // Playlist folder
@@ -76,6 +76,9 @@ public class Main extends Application {
             return;
         }
 
+        // Shuffling
+        ShuffleHelper.initializeShuffle(prefs, songs.length);
+        final int[] currentIndex = { ShuffleHelper.getCurrentShuffledIndex(prefs) };
         // ───────────────────────────────
         //  🎵 CURRENT TRACK & PLAYER
         // ───────────────────────────────
@@ -193,7 +196,7 @@ public class Main extends Application {
         //  🎛 EVENT HANDLERS
         // ───────────────────────────────
         nextBtn.setOnAction(e -> {
-            currentIndex[0] = (currentIndex[0] + 1) % songs.length;
+            currentIndex[0] = ShuffleHelper.getNextShuffledIndex(prefs, songs.length);
             prefs.putInt("currentTrackIndex", currentIndex[0]);
 
             mediaPlayer[0].stop();
@@ -215,7 +218,7 @@ public class Main extends Application {
         });
 
         lastBtn.setOnAction(e -> {
-            currentIndex[0] = (currentIndex[0] - 1 + songs.length) % songs.length;
+            currentIndex[0] = ShuffleHelper.getPreviousShuffledIndex(prefs, songs.length);
             prefs.putInt("currentTrackIndex", currentIndex[0]);
 
             mediaPlayer[0].stop();
